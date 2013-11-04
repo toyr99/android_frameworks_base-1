@@ -1760,6 +1760,9 @@
   <java-symbol type="dimen" name="subtitle_shadow_offset" />
   <java-symbol type="dimen" name="subtitle_outline_width" />
 
+  <!-- Max Wallpaper width -->
+  <java-symbol type="integer" name="config_wallpaperMaxWidth" />
+ 
   <!-- Config.xml entries -->
   <java-symbol type="integer" name="config_backKillTimeout" />
 
