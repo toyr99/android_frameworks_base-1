@@ -74,4 +74,8 @@
 
     <!-- First time run hover -->
     <string name="hover_cling_text">Hover is now enabled.\n\nWhen a new notification arrives, an overlay will show allowing you to respond to it without leaving current app.</string>
+
+    <!-- Screenshot delete -->
+    <string name="screenshot_delete_action">Delete</string>
+    <string name="screenshot_delete_confirmation">Screenshot deleted.</string>
 </resources>
