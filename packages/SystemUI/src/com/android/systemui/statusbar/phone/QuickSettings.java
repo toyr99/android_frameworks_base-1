@@ -102,15 +102,8 @@ class QuickSettings {
         AIRPLANE,
         BLUETOOTH,
         LOCATION,
-<<<<<<< HEAD
-        IMMERSIVE
-=======
         IMMERSIVE,
-        LTE,
-        MOBILENETWORK,
-        LIGHTBULB,
         SLEEP
->>>>>>> 6a742d6... Quicksettings: Sleep tile.
     }
 
     public static final String NO_TILES = "NO_TILES";
@@ -571,8 +564,8 @@ class QuickSettings {
                                             State state) {
                                         QuickSettingsModel.RotationLockState rotationLockState =
                                                 (QuickSettingsModel.RotationLockState) state;
-                                        // can't show/hide view, so just enable/disable
-                                        view.setEnabled(rotationLockState.visible);
+                                        // always enabled
+                                        view.setEnabled(true);
                                         if (state.iconId != 0) {
                                             // needed to flush any cached IDs
                                             rotationLockTile.setImageDrawable(null);
