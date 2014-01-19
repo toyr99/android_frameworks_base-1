@@ -20,4 +20,6 @@
     <!-- The list of components which should be automatically disabled. -->
     <string-array name="config_disabledComponents" translatable="false">
     </string-array>
+    <!-- Camera flash -->
+    <bool name="config_device_has_camera_flash">false</bool>
 </resources>
