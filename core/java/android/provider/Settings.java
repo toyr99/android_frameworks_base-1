@@ -2858,6 +2858,18 @@ public final class Settings {
         public static final String STATUSBAR_NOTIF_COUNT = "status_bar_notif_count";
 
         /**
+         * Allows to show the background activity back the lockscreen
+         * @hide
+         */
+        public static final String LOCKSCREEN_SEE_THROUGH = "lockscreen_see_through";
+
+        /**
+         * Radius of the blur lockscreen background
+         * @hide
+         */
+        public static final String LOCKSCREEN_BLUR_RADIUS = "lockscreen_blur_radius";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
