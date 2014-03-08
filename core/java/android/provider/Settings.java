@@ -2852,6 +2852,12 @@ public final class Settings {
         public static final String USE_EDGE_SERVICE_FOR_GESTURES = "edge_service_for_gestures";
 
         /**
+         * Show the pending notification counts as overlays on the statusbar
+         * @hide
+         */
+        public static final String STATUSBAR_NOTIF_COUNT = "status_bar_notif_count";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
