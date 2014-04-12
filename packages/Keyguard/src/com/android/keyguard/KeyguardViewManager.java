@@ -169,6 +169,7 @@ public class KeyguardViewManager {
 
         private Drawable mUserBackground;
         private Drawable mCustomBackground;
+        private Configuration mLastConfiguration;
         private int mLockscreenStyle;
 
         // This is a faster way to draw the background on devices without hardware acceleration
@@ -198,6 +199,7 @@ public class KeyguardViewManager {
             super(context);
             setBackground(mBackgroundDrawable);
             cacheUserImage();
+            mLastConfiguration = new Configuration(context.getResources().getConfiguration());
 
             context.registerReceiver(new BroadcastReceiver() {
                 @Override
@@ -298,12 +300,16 @@ public class KeyguardViewManager {
         @Override
         protected void onConfigurationChanged(Configuration newConfig) {
             super.onConfigurationChanged(newConfig);
-            if (mKeyguardHost.getVisibility() == View.VISIBLE) {
+            int diff = newConfig.diff(mLastConfiguration);
+            if ((diff & ~(ActivityInfo.CONFIG_MCC | ActivityInfo.CONFIG_MNC)) == 0) {
+                if (DEBUG) Log.v(TAG, "onConfigurationChanged: no relevant changes");
+            } else if (mKeyguardHost.getVisibility() == View.VISIBLE) {
                 // only propagate configuration messages if we're currently showing
                 maybeCreateKeyguardLocked(shouldEnableScreenRotation(), true, null);
             } else {
                 if (DEBUG) Log.v(TAG, "onConfigurationChanged: view not visible");
             }
+            mLastConfiguration = new Configuration(newConfig);
         }
 
         @Override
