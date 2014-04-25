@@ -983,7 +983,7 @@ public class GlowPadView extends View {
                 }
                 if (AccessibilityManager.getInstance(mContext).isEnabled()) {
                     String targetContentDescription = getTargetDescription(activeTarget);
-                    announceForAccessibility(targetContentDescription);
+                    if (targetContentDescription != null && targetContentDescription !="") announceForAccessibility(targetContentDescription);
                 }
             }
         }
@@ -1318,7 +1318,11 @@ public class GlowPadView extends View {
                 return null;
             }
         }
-        return mTargetDescriptions.get(index);
+        if (mTargetDescriptions.size()>index) {
+            return mTargetDescriptions.get(index);
+        } else {
+            return null;
+        }
     }
 
     private String getDirectionDescription(int index) {
@@ -1333,7 +1337,11 @@ public class GlowPadView extends View {
                 return null;
             }
         }
-        return mDirectionDescriptions.get(index);
+        if (mDirectionDescriptions.size()>index) {
+            return mDirectionDescriptions.get(index);
+        } else {
+            return null;
+        }
     }
 
     private ArrayList<String> loadDescriptions(int resourceId) {
