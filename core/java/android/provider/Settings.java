@@ -2569,7 +2569,13 @@ public final class Settings {
          */
         public static final String EGG_MODE = "egg_mode";
 
-       /**
+        /**
+         * Whether to show the IME switcher in the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
+
+	/**
 	*
 	* SMOOTH PROGRESS BAR interpolator
 	* @hide
