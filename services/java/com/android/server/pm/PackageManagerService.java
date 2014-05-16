@@ -9797,6 +9797,8 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         synchronized (mInstallLock) {
             if (DEBUG_REMOVE) Slog.d(TAG, "deletePackageX: pkg=" + packageName + " user=" + userId);
+            sendPackageBroadcast(Intent.ACTION_PACKAGE_BEING_REMOVED, packageName, null,
+                    null, null, null, null);
             res = deletePackageLI(packageName,
                     (flags & PackageManager.DELETE_ALL_USERS) != 0
                             ? UserHandle.ALL : new UserHandle(userId),
