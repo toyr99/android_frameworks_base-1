@@ -386,7 +386,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     }
 
     public void dismissAndGoBack() {
-        ((RecentsActivity) mContext).dismissAndGoBack();
+        mRecentsActivity.dismissAndGoBack();
     }
 
     public void onAnimationCancel(Animator animation) {
@@ -639,7 +639,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         } else {
             mRecentTaskDescriptions.addAll(tasks);
         }
-        if (((RecentsActivity) mContext).isActivityShowing()) {
+        if (mRecentsActivity.isActivityShowing()) {
             refreshViews();
         }
     }
@@ -804,6 +804,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                         show(false);
                     } else {
                         throw new IllegalStateException("Oops, no tag on view " + selectedView);
+			}
                     }else if (item.getItemId() == R.id.recent_launch_floating) {
                     ViewHolder viewHolder = (ViewHolder) selectedView.getTag();
                     if (viewHolder != null) {
