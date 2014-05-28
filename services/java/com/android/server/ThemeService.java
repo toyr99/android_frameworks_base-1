@@ -84,6 +84,8 @@ public class ThemeService extends IThemeService.Stub {
     private static final long MAX_ICON_CACHE_SIZE = 33554432L; // 32MB
     private static final long PURGED_ICON_CACHE_SIZE = 25165824L; // 24 MB
 
+    private static final String GOOGLE_SETUPWIZARD_PACKAGE = "com.google.android.setupwizard";
+
     private HandlerThread mWorker;
     private ThemeWorkerHandler mHandler;
     private Context mContext;
@@ -599,7 +601,7 @@ public class ThemeService extends IThemeService.Stub {
                 new Intent(ThemeUtils.ACTION_THEME_CHANGED), 0);
         for(ResolveInfo info : infos) {
             if (info.activityInfo != null && info.activityInfo.applicationInfo != null &&
-                    !handlesThemeChanges(
+		    !isSetupActivity(info) && !handlesThemeChanges(
                     info.activityInfo.applicationInfo.packageName, themeChangeInfos)) {
                 String pkgToStop = info.activityInfo.applicationInfo.packageName;
                 Log.d(TAG, "Force stopping " +  pkgToStop + " for theme change");
@@ -621,6 +623,10 @@ public class ThemeService extends IThemeService.Stub {
             }
         }
         return false;
+	}
+
+    private boolean isSetupActivity(ResolveInfo info) {
+        return GOOGLE_SETUPWIZARD_PACKAGE.equals(info.activityInfo.packageName);
     }
 
     private void postProgress(String pkgName) {
