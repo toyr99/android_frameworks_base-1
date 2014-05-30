@@ -179,13 +179,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
-                if (deviceSupportsLTE()) {
-                    mLteTile.setTemporary(false);
-                    refreshLteTile();
-                } else {
-                    mLteTile.setTemporary(true);
-                    mLteTile.setVisibility(View.GONE);
-                }
+                refreshMobileNetworkTile();
             }
             context.unregisterReceiver(mBootReceiver);
         }
@@ -256,7 +250,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
 
         @Override public void onChange(boolean selfChange) {
-            onLteChanged();
             onMobileNetworkChanged();
         }
 
@@ -354,7 +347,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private boolean mMassStorageActive = false;
     private String[] mUsbRegexs;
     private ConnectivityManager mCM;
-    private final NetworkObserver mLteObserver;
     private final NetworkObserver mMobileNetworkObserver;
 
     private final MediaRouter mMediaRouter;
@@ -442,10 +434,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mSslCaCertWarningCallback;
     private State mSslCaCertWarningState = new State();
 
-    protected QuickSettingsTileView mLteTile;
-    private RefreshCallback mLteCallback;
-    protected State mLteState = new State();
-
     private QuickSettingsTileView mMobileNetworkTile;
     private RefreshCallback mMobileNetworkCallback;
     private State mMobileNetworkState = new State();
@@ -485,8 +473,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mBugreportObserver.startObserving();
         mBrightnessObserver = new BrightnessObserver(mHandler);
         mBrightnessObserver.startObserving();
-        mLteObserver = new NetworkObserver(mHandler);
-        mLteObserver.startObserving();
         mMobileNetworkObserver = new NetworkObserver(mHandler);
         mMobileNetworkObserver.startObserving();
         mSleepTimeObserver = new SleepTimeObserver(mHandler);
@@ -533,7 +519,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         refreshRotationLockTile();
         refreshRssiTile();
         refreshLocationTile();
-        refreshLteTile();
         refreshMobileNetworkTile();
         refreshSleepTimeTile();
         refreshLocationExtraTile();
@@ -776,35 +761,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     }
 
-    // LTE
-    void addLteTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mLteTile = view;
-        mLteCallback = cb;
-        mLteCallback.refreshView(view, mLteState);
-    }
-
-    void onLteChanged() {
-        int network = getCurrentPreferredNetworkMode(mContext);
-            switch(network) {
-                case com.android.internal.telephony.Phone.NT_MODE_GLOBAL:
-                case com.android.internal.telephony.Phone.NT_MODE_LTE_CDMA_AND_EVDO:
-                case com.android.internal.telephony.Phone.NT_MODE_LTE_GSM_WCDMA:
-                case com.android.internal.telephony.Phone.NT_MODE_LTE_CMDA_EVDO_GSM_WCDMA:
-                case com.android.internal.telephony.Phone.NT_MODE_LTE_ONLY:
-                case com.android.internal.telephony.Phone.NT_MODE_LTE_WCDMA:
-                    mLteState.enabled = true;
-                    break;
-                default:
-                    mLteState.enabled = false;
-                    break;
-        }
-        mLteCallback.refreshView(mLteTile, mLteState);
-    }
-
-    void refreshLteTile() {
-        onLteChanged();
-    }
-
     // Mobile Network
     void addMobileNetworkTile(QuickSettingsTileView view, RefreshCallback cb) {
         mMobileNetworkTile = view;
@@ -813,7 +769,12 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     }
 
     void onMobileNetworkChanged() {
-        mMobileNetworkCallback.refreshView(mMobileNetworkTile, mMobileNetworkState);
+        if (deviceHasMobileData()) {
+            mMobileNetworkState.label = getNetworkType(mContext.getResources());
+            mMobileNetworkState.iconId = getNetworkTypeIcon();
+            mMobileNetworkState.enabled = true;
+            mMobileNetworkCallback.refreshView(mMobileNetworkTile, mMobileNetworkState);
+        }
     }
 
     void refreshMobileNetworkTile() {

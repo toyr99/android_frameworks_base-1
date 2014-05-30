@@ -110,8 +110,6 @@ class QuickSettings {
         BLUETOOTH,
         LOCATION,
         IMMERSIVE,
-        LTE,
-        MOBILENETWORK,
         SLEEP
     }
 
