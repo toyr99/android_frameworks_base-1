@@ -21,12 +21,11 @@
     <!-- QuickSettings: Mobile Network (2G/3G) [CHAR LIMIT=NONE] -->
     <string name="quick_settings_network_type">Network</string>
     <string name="quick_settings_network_unknown">Unknown</string>
+    <string name="quick_settings_network_disabled">Disabled</string>
+    <string name="quick_settings_network_toast_disabled">Network settings are not available</string>
     <!-- QuickSettings: Lightbulb tile [CHAR LIMIT=NONE] -->
     <string name="quick_settings_lightbulb_label">Lightbulb</string>
     <string name="quick_settings_lightbulb_off_label">Lightbulb Off</string>
-
-    <string name="quick_settings_network_disabled">Disabled</string>
-    <string name="quick_settings_network_toast_disabled">Network settings are not available</string>
     <!-- QuickSettings: USB Tether Tile [CHAR LIMIT=NONE] -->
     <string name="quick_settings_usb_tether_connected_label">USB Tethering Off</string>
     <string name="quick_settings_usb_tether_on_label">USB Tethering</string>
