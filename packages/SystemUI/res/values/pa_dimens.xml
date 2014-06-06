@@ -23,4 +23,8 @@
     <item name="sb_circle_battery_size_percentage" format="float" type="dimen">1.0</item>
     <item name="sb_circle_battery_thickness_fg_percentage" format="float" type="dimen">1.0</item>
     <item name="sb_circle_battery_thickness_bg_percentage" format="float" type="dimen">1.0</item>
+
+    <!-- Hover dimens -->
+    <dimen name="hover_height">64dp</dimen>
+    <dimen name="hover_cling_width">-1px</dimen>
 </resources>
