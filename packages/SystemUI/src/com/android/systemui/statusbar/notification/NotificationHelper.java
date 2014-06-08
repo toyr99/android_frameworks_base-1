@@ -20,10 +20,12 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -71,9 +73,12 @@ public class NotificationHelper {
     public static final int HOVER_ALPHA = 175;
     public static final int DEFAULT_ALPHA = 255;
 
-    private TelephonyManager mTelephonyManager;
     private BaseStatusBar mStatusBar;
+    private Context mContext;
+    private IntentFilter mPeekAppFilter;
     private Peek mPeek;
+    private PeekAppReceiver mPeekAppReceiver;
+    private TelephonyManager mTelephonyManager;
 
     private static final String FONT_FAMILY_DEFAULT = "sans-serif";
     private static final String FONT_FAMILY_LIGHT = "sans-serif-light";
@@ -86,8 +91,7 @@ public class NotificationHelper {
     private ActivityManager mActivityManager;
 
     public boolean mRingingOrConnected = false;
-
-    private Context mContext;
+    public boolean mPeekAppOverlayShowing = false;
 
     /**
      * Creates a new instance
@@ -101,12 +105,28 @@ public class NotificationHelper {
         mPeek = mStatusBar.getPeekInstance();
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(new CallStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
+
+	// create peek app receiver if null
+        if (mPeekAppReceiver == null) {
+            mPeekAppReceiver = new PeekAppReceiver();
+        }
+        if (mPeekAppFilter == null) {
+            mPeekAppFilter = new IntentFilter();
+            mPeekAppFilter.addAction(PEEK_SHOWING_BROADCAST);
+            mPeekAppFilter.addAction(PEEK_HIDING_BROADCAST);
+            mContext.registerReceiver(mPeekAppReceiver, mPeekAppFilter);
+        }
+
 }
     
 	public String getForegroundPackageName() {
         List<RunningTaskInfo> taskInfo = mActivityManager.getRunningTasks(1);
         ComponentName componentInfo = taskInfo.get(0).topActivity;
         return componentInfo.getPackageName();
+    }
+
+    public Peek getPeek() {
+        return mPeek;
     }
 
     public Hover getHover() {
@@ -129,8 +149,20 @@ public class NotificationHelper {
         return mPeek.isShowing();
     }
 
-    public Peek getPeek() {
-        return mPeek;
+    public boolean isPeekAppShowing() {
+        return mPeekAppOverlayShowing;
+    }
+
+    public class PeekAppReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(PEEK_SHOWING_BROADCAST)) {
+                mPeekAppOverlayShowing = true;
+            } else if (action.equals(PEEK_HIDING_BROADCAST)) {
+                mPeekAppOverlayShowing = false;
+            }
+        }
     }
 
     /**
@@ -361,7 +393,7 @@ public class NotificationHelper {
     public boolean isSimPanelShowing() {
         int state = mTelephonyManager.getSimState();
         return state == TelephonyManager.SIM_STATE_PIN_REQUIRED
-                 | state == TelephonyManager.SIM_STATE_PUK_REQUIRED
-                 | state == TelephonyManager.SIM_STATE_NETWORK_LOCKED;
+                | state == TelephonyManager.SIM_STATE_PUK_REQUIRED
+                | state == TelephonyManager.SIM_STATE_NETWORK_LOCKED;
     }
 }
