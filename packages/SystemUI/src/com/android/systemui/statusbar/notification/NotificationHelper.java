@@ -73,6 +73,9 @@ public class NotificationHelper {
     public static final int HOVER_ALPHA = 175;
     public static final int DEFAULT_ALPHA = 255;
 
+    private static final String PEEK_SHOWING_BROADCAST = "com.jedga.peek.PEEK_SHOWING";
+    private static final String PEEK_HIDING_BROADCAST = "com.jedga.peek.PEEK_HIDING";
+
     private BaseStatusBar mStatusBar;
     private Context mContext;
     private IntentFilter mPeekAppFilter;
@@ -105,6 +108,9 @@ public class NotificationHelper {
         mPeek = mStatusBar.getPeekInstance();
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(new CallStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
+
+	// we need to know which is the foreground app
+	mActivityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
 
 	// create peek app receiver if null
         if (mPeekAppReceiver == null) {
