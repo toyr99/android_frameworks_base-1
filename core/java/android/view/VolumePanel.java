@@ -43,6 +43,8 @@ import android.media.VolumeController;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
@@ -92,6 +94,12 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     private static final int MAX_VOLUME = 100;
     private static final int FREE_DELAY = 10000;
     private static final int TIMEOUT_DELAY = 3000;
+    private static final int ANIMATION_DURATION = 350; // same as hover view
+
+    public static final String ACTION_VOLUMEPANEL_SHOWN
+            = "android.view.volumepanel.SHOWN";
+    public static final String ACTION_VOLUMEPANEL_HIDDEN
+            = "android.view.volumepanel.HIDDEN";
 
     private static final int MSG_VOLUME_CHANGED = 0;
     private static final int MSG_FREE_RESOURCES = 1;
@@ -142,9 +150,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     /** Contains the sliders and their touchable icons */
     private final ViewGroup mSliderGroup;
     /** The button that expands the dialog to show all sliders */
-    private final View mMoreButton;
-    /** Dummy divider icon that needs to vanish with the more button */
-    private final View mDivider;
+    private final ImageView mMoreButton;
 
     /** Currently active stream that shows up at the top of the list of sliders */
     private int mActiveStreamType = -1;
@@ -310,7 +316,6 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         mPanel = (ViewGroup) mView.findViewById(R.id.visible_panel);
         mSliderGroup = (ViewGroup) mView.findViewById(R.id.slider_group);
         mMoreButton = (ImageView) mView.findViewById(R.id.expand_button);
-        mDivider = (ImageView) mView.findViewById(R.id.expand_button_divider);
 
         mDialog = new Dialog(context, R.style.Theme_Panel_Volume) {
             public boolean onTouchEvent(MotionEvent event) {
@@ -336,9 +341,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         LayoutParams lp = window.getAttributes();
         lp.token = null;
         // Offset from the top
-        lp.y = mContext.getResources().getDimensionPixelOffset(
-                com.android.internal.R.dimen.volume_panel_top);
-        lp.type = LayoutParams.TYPE_VOLUME_OVERLAY;
+        lp.y = 0;
+        lp.type = LayoutParams.TYPE_STATUS_BAR_PANEL;
         lp.width = LayoutParams.WRAP_CONTENT;
         lp.height = LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
@@ -379,8 +383,6 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         if (newStyle == mCurrentOverlayStyle) return;
         switch (newStyle) {
             case VOLUME_OVERLAY_EXPANDABLE :
-                mMoreButton.setVisibility(View.VISIBLE);
-                mDivider.setVisibility(View.VISIBLE);
                 mShowCombinedVolumes = true;
                 mCurrentOverlayStyle = VOLUME_OVERLAY_EXPANDABLE;
                 break;
@@ -495,8 +497,6 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     }
 
     private void addOtherVolumes() {
-        if (!mShowCombinedVolumes) return;
-
         for (int i = 0; i < STREAMS.length; i++) {
             // Skip the phone specific ones and the active one
             final int streamType = STREAMS[i].streamType;
@@ -543,7 +543,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     }
 
     private boolean isExpanded() {
-        return mMoreButton.getVisibility() != View.VISIBLE;
+        return mSliderGroup.getChildAt(1).getVisibility() == View.VISIBLE;
     }
 
     private void expand() {
@@ -553,8 +553,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
                 mSliderGroup.getChildAt(i).setVisibility(View.VISIBLE);
             }
         }
-        mMoreButton.setVisibility(View.GONE);
-        mDivider.setVisibility(View.GONE);
+        mMoreButton.setImageResource(R.drawable.ic_find_previous_holo_dark);
     }
 
     private void hideSlider(int mActiveStreamType) {
@@ -568,12 +567,17 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     }
 
     private void collapse() {
-        mMoreButton.setVisibility(View.VISIBLE);
-        mDivider.setVisibility(View.VISIBLE);
         final int count = mSliderGroup.getChildCount();
         for (int i = 1; i < count; i++) {
             mSliderGroup.getChildAt(i).setVisibility(View.GONE);
         }
+        mMoreButton.setImageResource(R.drawable.ic_find_next_holo_dark);
+    }
+
+    private void sendIntent(String action) {
+        Intent i = new Intent(action);
+        //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.sendBroadcast(i);
     }
 
     public void updateStates() {
@@ -807,10 +811,20 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
             mAudioManager.forceVolumeControlStream(stream);
             mDialog.setContentView(mView);
             // Showing dialog - use collapsed state
-            if (mShowCombinedVolumes) {
-                collapse();
-            }
+            collapse();
             mDialog.show();
+            sendIntent(ACTION_VOLUMEPANEL_SHOWN);
+            Runnable r = new Runnable() {
+                public void run() {
+                    mView.setY(-mView.getHeight());
+                    mView.animate().y(0).setDuration(ANIMATION_DURATION);
+                }
+            };
+            if (mView.getHeight() == 0) {
+                new Handler().post(r);
+            } else {
+                r.run();
+            }
         }
 
         // Do a little vibrate if applicable (only when going into vibrate mode)
@@ -1052,9 +1066,14 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
 
             case MSG_TIMEOUT: {
                 if (mDialog.isShowing()) {
+                    mView.animate().y(-mView.getHeight()).setDuration(ANIMATION_DURATION).withEndAction(new Runnable() {
+                        public void run() {
+                            sendIntent(ACTION_VOLUMEPANEL_HIDDEN);
+                            mDialog.dismiss();
+                            mActiveStreamType = -1;
+                        }
+                    });
                     applyTranslucentWindow();
-                    mDialog.dismiss();
-                    mActiveStreamType = -1;
                 }
                 synchronized (sConfirmSafeVolumeLock) {
                     if (sConfirmSafeVolumeDialog != null) {
@@ -1132,21 +1151,21 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
     }
 
     public void onClick(View v) {
-        boolean moreButton = v == mMoreButton;
-        if (v instanceof ImageView && !moreButton) {
-            Intent volumeSettings = new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS);
-            volumeSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            forceTimeout();
-            mContext.startActivity(volumeSettings);
-            return;
-        }
-
         if (mTranslucentDialog && mShouldRunDropTranslucentAnimation) {
             startRemoveTranslucentAnimation();
         }
-        if (moreButton) {
-            expand();
+        if (v == mMoreButton) {
+            if (isExpanded()) {
+                collapse();
+            } else {
+                expand();
+            }
+        } else if (v instanceof ImageView) {
+            Intent volumeSettings = new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS);
+            volumeSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            forceTimeout();
+            mContext.startActivity(volumeSettings);
+            return;
         }
         resetTimeout();
     }
