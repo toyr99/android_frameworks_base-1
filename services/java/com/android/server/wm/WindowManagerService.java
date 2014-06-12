@@ -5326,7 +5326,7 @@ public class WindowManagerService extends IWindowManager.Stub
 
     @Override
     public void reboot(String reason, boolean confirm) {
-        ShutdownThread.reboot(mContext, reason, confirm);
+        ShutdownThread.reboot(getUiContext(), reason, confirm);
     }
 
 
