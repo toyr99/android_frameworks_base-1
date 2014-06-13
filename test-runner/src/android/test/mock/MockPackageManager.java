@@ -669,6 +669,9 @@ public class MockPackageManager extends PackageManager {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @hide
+     */
     @Override
     public void setComponentProtectedSetting(ComponentName componentName, boolean newState) {
         throw new UnsupportedOperationException();
