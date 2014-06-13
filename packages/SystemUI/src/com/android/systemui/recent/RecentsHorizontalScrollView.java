@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
@@ -55,6 +56,9 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     private int mNumItemsInOneScreenful;
     private Runnable mOnScrollListener;
     private Handler mHandler;
+
+    // control clear all animation overload on quick double tap
+    private boolean mAnimationDone = true;
 
     public RecentsHorizontalScrollView(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
@@ -209,9 +213,15 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
                         // one. This will probably never happen
                     }
                 }
+                // we're done dismissing childs here, reset
+                mAnimationDone = true;
             }
         });
-        clearAll.start();
+
+        if (mAnimationDone) {
+            mAnimationDone = false;
+            clearAll.start();
+        }
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {

@@ -93,6 +93,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mFitThumbnailToXY;
     private int mRecentItemLayoutId;
     private boolean mHighEndGfx;
+    private RecentsActivity mRecentsActivity;
 
     public static interface RecentsScrollView {
         public int numItemsInOneScreenful();
