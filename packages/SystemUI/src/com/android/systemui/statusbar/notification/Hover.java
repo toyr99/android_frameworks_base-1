@@ -19,18 +19,22 @@ package com.android.systemui.statusbar.notification;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.KeyguardManager;
+import android.app.Notification;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.IWindowManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.WindowManagerGlobal;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
@@ -96,6 +100,8 @@ public class Hover {
     private ArrayList<HoverNotification> mNotificationList;
     private ArrayList<StatusBarNotification> mStatusBarNotifications;
 
+    private IWindowManager mWindowManagerService;
+
     /**
      * Creates a new hover instance
      * @Param context the current Context
@@ -112,6 +118,7 @@ public class Hover {
         mHoverTabletWidth = mContext.getResources().getDimensionPixelSize(R.dimen.hover_tablet_width);
         mNotificationList = new ArrayList<HoverNotification>();
         mStatusBarNotifications = new ArrayList<StatusBarNotification>();
+        mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
 
         // check if we're on phone, we discriminate hover size,
         // on phone matches parent width, on tablets notification panel one
@@ -338,6 +345,21 @@ public class Hover {
     public boolean isDialpadShowing() {
         return Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.DIALPAD_STATE, 0) != 0;
+    }
+
+    public boolean requireFullscreenMode() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HOVER_REQUIRE_FULLSCREEN_MODE, 1) != 0;
+    }
+
+    public boolean excludeNonClearable() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HOVER_EXCLUDE_NON_CLEARABLE, 0) != 0;
+    }
+
+    public boolean excludeLowPriority() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HOVER_EXCLUDE_LOW_PRIORITY, 0) != 0;
     }
 
     public boolean isInCallUINotification(Entry entry) {
@@ -613,12 +635,34 @@ public class Hover {
         boolean allowed = true; // default on
         boolean foreground = false; // default off
 
+        //Exclude blacklisted
         try {
             final String packageName = entry.notification.getPackageName();
             allowed = mStatusBar.getNotificationManager().isPackageAllowedForHover(packageName);
         } catch (android.os.RemoteException ex) {
             // System is dead
         }
+
+       //Check for fullscreen mode
+        if (requireFullscreenMode()) {
+            int vis = 0;
+            try {
+                vis = mWindowManagerService.getSystemUIVisibility();
+            } catch (android.os.RemoteException ex) {
+            }
+            final boolean isStatusBarVisible = (vis & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0
+                    || (vis & View.STATUS_BAR_TRANSIENT) != 0;
+            if (isStatusBarVisible)
+                allowed = false;
+        }
+
+        //Exclude non-clearable
+        if (!entry.notification.isClearable() && excludeNonClearable())
+            allowed = false;
+
+        //Exclude low priority
+        if (excludeLowPriority() && entry.notification.getNotification().priority < Notification.PRIORITY_LOW)
+            allowed = false;
 
         if (entry.notification.getPackageName().equals(
                 mNotificationHelper.getForegroundPackageName()))
