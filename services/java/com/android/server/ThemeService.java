@@ -594,7 +594,7 @@ public class ThemeService extends IThemeService.Stub {
                 new Intent(ThemeUtils.ACTION_THEME_CHANGED), 0);
         for(ResolveInfo info : infos) {
             if (info.activityInfo != null && info.activityInfo.applicationInfo != null &&
-                    !isSetupActivity(info) && !handlesThemeChanges(
+                    !handlesThemeChanges(
                     info.activityInfo.applicationInfo.packageName, themeChangeInfos)) {
                 String pkgToStop = info.activityInfo.applicationInfo.packageName;
                 Log.d(TAG, "Force stopping " +  pkgToStop + " for theme change");
