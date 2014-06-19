@@ -273,18 +273,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mItems = new ArrayList<Action>();
 
-        int quickbootAvailable = 1;
-        final PackageManager pm = mContext.getPackageManager();
-        try {
-            pm.getPackageInfo("com.qapp.quickboot", PackageManager.GET_META_DATA);
-        } catch (NameNotFoundException e) {
-            quickbootAvailable = 0;
-        }
-
-        final boolean quickbootEnabled = Settings.Global.getInt(
-                mContext.getContentResolver(), Settings.Global.ENABLE_QUICKBOOT,
-                quickbootAvailable) == 1;
-
         // first: power off
         mItems.add(
             new SinglePressAction(
@@ -292,8 +280,21 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     R.string.global_action_power_off) {
 
                 public void onPress() {
+                    // Check quickboot status
+                    boolean quickbootAvailable = false;
+                    final PackageManager pm = mContext.getPackageManager();
+                    try {
+                        pm.getPackageInfo("com.qapp.quickboot", PackageManager.GET_META_DATA);
+                        quickbootAvailable = true;
+                    } catch (NameNotFoundException e) {
+                        // Ignore
+                    }
+                    final boolean quickbootEnabled = Settings.Global.getInt(
+                            mContext.getContentResolver(), Settings.Global.ENABLE_QUICKBOOT,
+                            1) == 1;
+
                     // goto quickboot mode
-                    if (quickbootEnabled) {
+                    if (quickbootAvailable && quickbootEnabled) {
                         startQuickBoot();
                         return;
                     }
@@ -304,11 +305,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 public boolean onLongPress() {
                     // long press always does a full shutdown in case quickboot is enabled
                     mWindowManagerFuncs.shutdown(true);
-                    return true;
-                }
-
-                public boolean onLongPress() {
-                    mWindowManagerFuncs.rebootSafeMode(true);
                     return true;
                 }
 
@@ -330,6 +326,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
 
                 public boolean onLongPress() {
+                    mWindowManagerFuncs.rebootSafeMode(true);
                     return true;
                 }
 
