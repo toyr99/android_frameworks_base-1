@@ -2530,17 +2530,6 @@ public final class Settings {
         public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
 
         /**
-         * Custom navring actions
-         *
-         * @hide
-         */
-        public static final String[] NAVIGATION_RING_TARGETS = new String[] {
-            "navigation_ring_targets_0",
-            "navigation_ring_targets_1",
-            "navigation_ring_targets_2",
-        };
-        
-        /**
          * Whether to wake the screen with the volume keys, the value is boolean.
          * @hide
          */
