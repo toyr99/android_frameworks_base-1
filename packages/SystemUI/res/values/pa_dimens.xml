@@ -16,9 +16,9 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Circle battery view -->
-    <item name="circle_battery_size_percentage" format="float" type="dimen">1.0</item>
-    <item name="circle_battery_thickness_fg_percentage" format="float" type="dimen">1.0</item>
-    <item name="circle_battery_thickness_bg_percentage" format="float" type="dimen">1.0</item>
+    <item name="qs_circle_battery_size_percentage" format="float" type="dimen">1.0</item>
+    <item name="qs_circle_battery_thickness_fg_percentage" format="float" type="dimen">1.0</item>
+    <item name="qs_circle_battery_thickness_bg_percentage" format="float" type="dimen">1.0</item>
 
     <item name="sb_circle_battery_size_percentage" format="float" type="dimen">1.0</item>
     <item name="sb_circle_battery_thickness_fg_percentage" format="float" type="dimen">1.0</item>
