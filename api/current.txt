@@ -21255,7 +21255,6 @@ package android.provider {
     field public static final deprecated java.lang.String MODE_RINGER = "mode_ringer";
     field public static final java.lang.String MODE_RINGER_STREAMS_AFFECTED = "mode_ringer_streams_affected";
     field public static final java.lang.String MUTE_STREAMS_AFFECTED = "mute_streams_affected";
-    field public static final java.lang.String[] NAVIGATION_RING_TARGETS;
     field public static final deprecated java.lang.String NETWORK_PREFERENCE = "network_preference";
     field public static final java.lang.String NEXT_ALARM_FORMATTED = "next_alarm_formatted";
     field public static final java.lang.String NOTIFICATION_SOUND = "notification_sound";
@@ -30916,6 +30915,15 @@ package android.widget {
     method public abstract void onCheckedChanged(android.widget.CompoundButton, boolean);
   }
 
+  public class ContentLoadingSmoothProgressBar extends android.widget.SmoothProgressBar {
+    ctor public ContentLoadingSmoothProgressBar(android.content.Context);
+    ctor public ContentLoadingSmoothProgressBar(android.content.Context, android.util.AttributeSet);
+    method public void hide();
+    method public void onAttachedToWindow();
+    method public void onDetachedFromWindow();
+    method public void show();
+  }
+
   public abstract class CursorAdapter extends android.widget.BaseAdapter implements android.widget.Filterable {
     ctor public deprecated CursorAdapter(android.content.Context, android.database.Cursor);
     ctor public CursorAdapter(android.content.Context, android.database.Cursor, boolean);
@@ -32217,6 +32225,55 @@ package android.widget {
   public static abstract interface SlidingDrawer.OnDrawerScrollListener {
     method public abstract void onScrollEnded();
     method public abstract void onScrollStarted();
+  }
+
+  public class SmoothProgressBar extends android.widget.ProgressBar {
+    ctor public SmoothProgressBar(android.content.Context);
+    ctor public SmoothProgressBar(android.content.Context, android.util.AttributeSet);
+    ctor public SmoothProgressBar(android.content.Context, android.util.AttributeSet, int);
+    method public void applyStyle(int);
+    method public void setSmoothProgressDrawableColor(int);
+    method public void setSmoothProgressDrawableColors(int[]);
+    method public void setSmoothProgressDrawableInterpolator(android.view.animation.Interpolator);
+    method public void setSmoothProgressDrawableMirrorMode(boolean);
+    method public void setSmoothProgressDrawableReversed(boolean);
+    method public void setSmoothProgressDrawableSectionsCount(int);
+    method public void setSmoothProgressDrawableSeparatorLength(int);
+    method public void setSmoothProgressDrawableSpeed(float);
+    method public void setSmoothProgressDrawableStrokeWidth(float);
+  }
+
+  public class SmoothProgressDrawable extends android.graphics.drawable.Drawable implements android.graphics.drawable.Animatable {
+    method public void draw(android.graphics.Canvas);
+    method public int getOpacity();
+    method public boolean isRunning();
+    method public void setAlpha(int);
+    method public void setColor(int);
+    method public void setColorFilter(android.graphics.ColorFilter);
+    method public void setColors(int[]);
+    method public void setInterpolator(android.view.animation.Interpolator);
+    method public void setMirrorMode(boolean);
+    method public void setReversed(boolean);
+    method public void setSectionsCount(int);
+    method public void setSeparatorLength(int);
+    method public void setSpeed(float);
+    method public void setStrokeWidth(float);
+    method public void start();
+    method public void stop();
+  }
+
+  public static class SmoothProgressDrawable.Builder {
+    ctor public SmoothProgressDrawable.Builder(android.content.Context);
+    method public android.widget.SmoothProgressDrawable build();
+    method public android.widget.SmoothProgressDrawable.Builder color(int);
+    method public android.widget.SmoothProgressDrawable.Builder colors(int[]);
+    method public android.widget.SmoothProgressDrawable.Builder interpolator(android.view.animation.Interpolator);
+    method public android.widget.SmoothProgressDrawable.Builder mirrorMode(boolean);
+    method public android.widget.SmoothProgressDrawable.Builder reversed(boolean);
+    method public android.widget.SmoothProgressDrawable.Builder sectionsCount(int);
+    method public android.widget.SmoothProgressDrawable.Builder separatorLength(int);
+    method public android.widget.SmoothProgressDrawable.Builder speed(float);
+    method public android.widget.SmoothProgressDrawable.Builder strokeWidth(float);
   }
 
   public final class Space extends android.view.View {
