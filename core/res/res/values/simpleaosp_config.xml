@@ -22,4 +22,16 @@
     </string-array>
     <!-- Camera flash -->
     <bool name="config_device_has_camera_flash">false</bool>
+
+    <!-- kill app long press back -->
+    <integer name="config_backKillTimeout">500</integer>
+
+    <!-- Does the notification LED support multiple colors? Used to decide if the used can change the colors -->
+    <bool name="config_multiColorNotificationLed">true</bool>
+
+    <!-- Is the battery LED intrusive? Used to decide if there should be a disable option -->
+    <bool name="config_intrusiveBatteryLed">false</bool>
+
+    <!-- Does the battery LED support multiple colors? Used to decide if the user can change the colors -->
+    <bool name="config_multiColorBatteryLed">false</bool>
 </resources>
