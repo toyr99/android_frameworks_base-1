@@ -332,7 +332,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     }
 
     private void updateKeyButtonViewResources(ViewGroup container) {
-        ViewGroup midNavButtons = (ViewGroup) container.findViewById(R.id.mid_nav_buttons);
+        ViewGroup midNavButtons = (ViewGroup) container.findViewById(R.id.nav_buttons);
         if (midNavButtons != null) {
             final int nChildren = midNavButtons.getChildCount();
             for (int i = 0; i < nChildren; i++) {
@@ -342,11 +342,11 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                 }
             }
         }
-        KeyButtonView kbv = (KeyButtonView) findViewById(R.id.one);
+        KeyButtonView kbv = (KeyButtonView) findViewById(R.id.search_light);
         if (kbv != null) {
             kbv.updateResources(mThemedResources);
         }
-        kbv = (KeyButtonView) findViewById(R.id.six);
+        kbv = (KeyButtonView) findViewById(R.id.camera_button);
         if (kbv != null) {
             kbv.updateResources(mThemedResources);
         }
