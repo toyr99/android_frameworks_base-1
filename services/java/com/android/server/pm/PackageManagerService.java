@@ -1379,7 +1379,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         mVendorOverlayInstallObserver = new AppDirObserver(
             vendorOverlayDir.getPath(), OBSERVER_EVENTS, true, false);
         mVendorOverlayInstallObserver.startWatching();
-        scanDirLI(vendorOverlayDir, PackageParser.PARSE_IS_SYSTEM
+        scanDir(vendorOverlayDir, PackageParser.PARSE_IS_SYSTEM
                 | PackageParser.PARSE_IS_SYSTEM_DIR, scanMode | SCAN_TRUSTED_OVERLAY, 0);
 
         // Find base frameworks (resource packages without code).
