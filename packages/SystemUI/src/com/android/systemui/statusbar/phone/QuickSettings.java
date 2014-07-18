@@ -562,6 +562,7 @@ class QuickSettings {
                             public void onClick(View v) {
                                 boolean currentState = mConnectivityManager.getMobileDataEnabled();
                                 mConnectivityManager.setMobileDataEnabled(!currentState);
+                                mModel.refreshRssiTile();
                             }
                         });
                         rssiTile.setFrontOnLongClickListener(new View.OnLongClickListener() {
@@ -1009,6 +1010,14 @@ class QuickSettings {
                         public void refreshView(QuickSettingsTileView view, State state) {
                             sleepTile.setBackImageResource(state.iconId);
                             sleepTile.setBackText(state.label);
+                        }
+                    });
+                    sleepTile.setBackOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            collapsePanels();
+                            startSettingsActivity(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
+                            return true;
                         }
                     });
                     parent.addView(sleepTile);
