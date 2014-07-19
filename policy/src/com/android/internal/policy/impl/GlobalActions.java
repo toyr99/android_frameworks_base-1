@@ -302,11 +302,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
 
                 public boolean onLongPress() {
-                    if (quickbootEnabled) {
-                        // long press always does a full shutdown in case quickboot is enabled
-                        mWindowManagerFuncs.shutdown(true);
-                        return true;
-                    }
+                    // long press always does a full shutdown in case quickboot is enabled
+                    mWindowManagerFuncs.shutdown(true);
+                    return true;
+                }
+
+                public boolean onLongPress() {
+                    mWindowManagerFuncs.rebootSafeMode(true);
                     return true;
                 }
 
@@ -328,7 +330,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
 
                 public boolean onLongPress() {
-                    mWindowManagerFuncs.rebootSafeMode(true);
                     return true;
                 }
 
